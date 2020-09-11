@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+<head>
+    <title>Nobel Prizes</title> 
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="CSS/CSS%20Style.css">    
+</head>	
+	
+	
+<body>
+
+	<div>
+    
+		<h1><a href="nobels.html">Nobel Prize Winners</a></h1>
+		
+		<p>Please select a year range and click submit. You may also select a prize category if you wish.<br>Once the page loads you may also filter by male/female and click the more info button for additional information.</p>
+    
+		<div id="OptionsSelect">    
+    
+			Start Year:<select id="Years"></select> 
+			
+			End Year:<select id="Years1"></select>
+			
+			Category:<select id="category"> 
+			<option id="AllWinners">All</option>
+			</select> 
+			<button id= "submit">Submit</button><br>
+
+			Gender:<input id="AllGenders" type="radio" name="gender" value="AllWinners" checked>All    
+			<input id="male" type="radio" name="gender" value="male">Male
+			<input id="female" type="radio" name="gender" value="female">Female
+
+		</div>  
+    	
+		<div id="prizesByYear"></div>
+		<div id="winnersByID"></div>
+    
+	</div>
+
+<script>
+
+    
+// this block loads in prizes by year JSON file and converts to javascript    
+var xmlhttp = new XMLHttpRequest();
+var url = "prizesByYear.json";  
+
+xmlhttp.onreadystatechange = function() {
+    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        
+        //Parse the JSON data to a JavaScript variable. 
+        var parsedObj = JSON.parse(xmlhttp.responseText);    
+        // This function is defined below and deals with the JSON data parsed from the file. 
+        displayJSON(parsedObj); 
+    }
+};
+
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+ 
+// this block loads in winners by ID JSON file and converts to javascript    
+var xmlhttp1 = new XMLHttpRequest();
+var url1 = "winnersByID.json";  
+
+xmlhttp1.onreadystatechange = function() {
+    if (xmlhttp1.readyState == 4 && xmlhttp1.status == 200) {
+        
+        //Parse the JSON data to a JavaScript variable. 
+        var parsedObj1 = JSON.parse(xmlhttp1.responseText);    
+        // This function is defined below and deals with the JSON data parsed from the file. 
+        displayJSON1(parsedObj1); 
+    }
+};
+
+xmlhttp1.open("GET", url1, true);
+xmlhttp1.send();
+    
+var WinnersByIDArray = []
+var WinnersByYearArray = []
+
+// function deals with and filters data read in from winners by ID JSON and puts data in an array
+function displayJSON1(obj) {
+        var laureates = obj.laureates;
+        for (var i=0; i <laureates.length; i++){    
+            var id = laureates[i].id;
+                var firstname = laureates[i].firstname;
+                var surname = laureates[i].surname;
+                var gender = laureates[i].gender;
+                var DOB = laureates[i].born;
+                var DOD = laureates[i].died;
+                var city = laureates[i].bornCity;
+                var prizes = laureates[i].prizes;
+                var category = prizes[0].category;
+                var year = prizes[0].year;
+                var motivation = prizes[0].motivation;
+                var affiliations = prizes[0].affiliations;
+				var name = affiliations[0].name; 
+                var affCity = affiliations[0].city; 
+                var country = affiliations[0].country; 
+				if(prizes[1] != void 0){
+                	var category1 = prizes[1].category;
+                    var year1 = prizes[1].year;
+                    var motivation1 = prizes[1].motivation;
+				}
+				else{
+                    var category1 = 0;
+                    var year1 = 0;
+                    var motivation1 = 0;	
+				}  
+				if(affiliations[1] != void 0){
+					var name1 = affiliations[1].name; 
+                    var affCity1 = affiliations[1].city; 
+                    var country1 = affiliations[1].country;
+				}
+  				else{
+					var name1 = 0; 
+                    var affCity1 = 0; 
+                    var country1 = 0;	
+				}
+
+WinnersByIDArray.push(id,firstname,surname,gender,DOB,DOD,city,year,category,motivation,name,affCity,country,category1,year1,motivation1,name1,affCity1,country1) ;  
+        }
+}
+        
+function displayJSON(obj) {
+    var prizes = obj.prizes;
+    
+    // this for loop gets unique values for category dropdown menu. Used help from https://stackoverflow.com/questions/38206915/filter-out-array-to-have-only-unique-values. Used w3 schools to add option in drop down meun. https://www.w3schools.com/jsref/met_select_add.asp
+    var categorydropdown = "" ;
+    for (var b=0; b <prizes.length; b++){ 
+        var categories = prizes[b].category;
+        categorydropdown += categories + " ";
+        var res = categorydropdown.split(" ");
+        var uniqueArray = Array.from(new Set(res));
+    }
+        for (var c=0; c <uniqueArray.length-1; c++){ 
+            var x = document.getElementById("category");
+            var option = document.createElement("option");
+            option.text = uniqueArray[c];
+            option.id = uniqueArray[c];
+            x.add(option, x[c]-1);
+        }    
+    
+    // this for loop gets unique values for years dropdown menu. Used help from https://stackoverflow.com/questions/38206915/filter-out-array-to-have-only-unique-values. Used w3 schools to add option in drop down meun. https://www.w3schools.com/jsref/met_select_add.asp
+    var YearRanges = "" ;
+    for (var f=0; f <prizes.length; f++){ 
+        var startyear = prizes[f].year;
+        YearRanges += startyear + " ";
+        var resulting = YearRanges.split(" ");
+        var uniqueYearArray = Array.from(new Set(resulting));
+    }
+        for (var y=0; y <uniqueYearArray.length-1; y++){ 
+            var z = document.getElementById("Years");
+            var optionYear = document.createElement("option");
+            optionYear.text = uniqueYearArray[y];
+            optionYear.id = uniqueYearArray[y];
+            z.add(optionYear, z[y]-1);
+        }  
+        for (var y=0; y <uniqueYearArray.length-1; y++){ 
+            var z = document.getElementById("Years1");
+            var optionYear = document.createElement("option");
+            optionYear.text = uniqueYearArray[y];
+            optionYear.id = uniqueYearArray[y];
+            z.add(optionYear, z[y]-1);
+        }   
+
+   // function deals with and filters data read in from prizes by year JSON and puts data in an array
+    for (var i=0; i <prizes.length; i++) {    
+                var ID = prizes[i].id;
+                var year = parseInt(prizes[i].year);
+                var category = prizes[i].category;
+                var laureates = prizes[i].laureates;
+                for (var x=0; x <laureates.length; x++){   
+                    var ID = laureates[x].id;
+                    var firstname = laureates[x].firstname;
+                    var surname = laureates[x].surname;
+                    var motivation = laureates[x].motivation;  
+                    WinnersByYearArray.push([ID,year,category,firstname,surname,motivation]);           
+                }   
+    }
+ 
+	// filters the data when clicked the submit button
+    document.getElementById("submit").addEventListener("click", function(){
+    // creates and formats prizeByYear table    
+    var prizeByYear = "<table border = 1 >";
+    prizeByYear += "<tr><th>Year</th><th>Category</th><th>First Name</th><th>Surname</th><th>Motivation</th><th>Gender</th><th>Additional Info</th></tr>";   
+    for (var i=0; i <WinnersByYearArray.length; i++) {  
+            var ID = WinnersByYearArray[i][0];
+			var cat = WinnersByYearArray[i][2];
+            var test = WinnersByYearArray[i][1];
+		    var startyearrange = parseInt(document.getElementById("Years").value);
+    		var endyearrange = parseInt(document.getElementById("Years1").value);
+    		var catselected = document.getElementById("category").value;  
+			// if criteria for year range and category range
+			if (test >= startyearrange && test	<=endyearrange && (cat == catselected || catselected == "All")){
+			var year = WinnersByYearArray[i][1];  
+			var category = WinnersByYearArray[i][2];  	
+            var firstname = WinnersByYearArray[i][3];
+            var surname = WinnersByYearArray[i][4];
+            var motivation = WinnersByYearArray[i][5];
+            for (var x=0; x <WinnersByIDArray.length; x += 19) { 
+                if (ID ==WinnersByIDArray[x]){
+					var gender = WinnersByIDArray[x+3];          
+            	}
+			}
+			prizeByYear += "<tr><td>" + year + "</td><td>" + category + "</td><td>" + firstname + "</td><td>" + surname + "</td><td>" + motivation + "</td><td>" + gender + "</td><td><button onclick="+"reply_click(this.id)"+" class="+"button"+" id="+ID +">" + "More Info" + "</button></td></tr>"; 
+					
+			}
+	}
+            prizeByYear += "</table>";     
+	// error check - if start year is greater than end year
+	if (startyearrange > endyearrange) {      
+        document.getElementById("prizesByYear").innerHTML = "Error, start year cannot be greater than end year";
+    }else{
+        document.getElementById("prizesByYear").innerHTML = prizeByYear;
+    }
+		        
+	// filters the data when clicked the male button	
+    document.getElementById("male").addEventListener("click", function(){
+    // creates and formats prizeByYear table   
+    var prizeByYear = "<table border = 1 >";
+	prizeByYear += "<tr><th>Year</th><th>Category</th><th>First Name</th><th>Surname</th><th>Motivation</th><th>Gender</th><th>Additional Info</th></tr>";
+    for (var i=0; i <WinnersByYearArray.length; i++) {  
+            var ID = WinnersByYearArray[i][0];
+			var cat = WinnersByYearArray[i][2];
+            var test = WinnersByYearArray[i][1];
+			var startyearrange = parseInt(document.getElementById("Years").value);
+			var endyearrange = parseInt(document.getElementById("Years1").value);
+    		var catselected = document.getElementById("category").value;   
+			// if criteria for year range and category range
+			if (test >= startyearrange && test	<=endyearrange && (cat == catselected || catselected == "All")){
+			var year = WinnersByYearArray[i][1];  
+			var category = WinnersByYearArray[i][2];  	
+            var firstname = WinnersByYearArray[i][3];
+            var surname = WinnersByYearArray[i][4];
+            var motivation = WinnersByYearArray[i][5];
+            for (var x=0; x <WinnersByIDArray.length; x += 19) { 
+                if (ID ==WinnersByIDArray[x]){
+					var gender = WinnersByIDArray[x+3];                 
+            	}
+			}
+			if( gender =="male"){	
+			prizeByYear += "<tr><td>" + year + "</td><td>" + category + "</td><td>" + firstname + "</td><td>" + surname + "</td><td>" + motivation + "</td><td>" + gender + "</td><td><button onclick="+"reply_click(this.id)"+" class="+"button"+" id="+ID +">" + "More Info" + "</button></td></tr>"; 
+			}
+					
+			}
+	}
+            prizeByYear += "</table>";     
+            document.getElementById("prizesByYear").innerHTML = prizeByYear;
+		
+	});
+ 	
+	// filters the data when clicked the female button	
+	document.getElementById("female").addEventListener("click", function(){
+    /// creates and formats prizeByYear table 
+    var prizeByYear = "<table border = 1 >";
+	prizeByYear += "<tr><th>Year</th><th>Category</th><th>First Name</th><th>Surname</th><th>Motivation</th><th>Gender</th><th>Additional Info</th></tr>";
+    for (var i=0; i <WinnersByYearArray.length; i++) {  
+            var ID = WinnersByYearArray[i][0];
+			var cat = WinnersByYearArray[i][2];
+            var test = WinnersByYearArray[i][1];
+		    var startyearrange = parseInt(document.getElementById("Years").value);
+			var endyearrange = parseInt(document.getElementById("Years1").value);
+    		var catselected = document.getElementById("category").value; 
+			// if criteria for year range and category range
+			if (test >= startyearrange && test	<=endyearrange && (cat == catselected || catselected == "All")){
+			var year = WinnersByYearArray[i][1];  
+			var category = WinnersByYearArray[i][2];  	
+            var firstname = WinnersByYearArray[i][3];
+            var surname = WinnersByYearArray[i][4];
+            var motivation = WinnersByYearArray[i][5];
+            for (var x=0; x <WinnersByIDArray.length; x += 19) { 
+                if (ID ==WinnersByIDArray[x]){
+					var gender = WinnersByIDArray[x+3];                 
+            	}
+			}
+			if( gender =="female"){	
+			prizeByYear += "<tr><td>" + year + "</td><td>" + category + "</td><td>" + firstname + "</td><td>" + surname + "</td><td>" + motivation + "</td><td>" + gender + "</td><td><button onclick="+"reply_click(this.id)"+" class="+"button"+" id="+ID +">" + "More Info" + "</button></td></tr>"; 
+			}
+					
+			}
+	}
+            prizeByYear += "</table>";     
+            document.getElementById("prizesByYear").innerHTML = prizeByYear;
+                    
+});
+	
+	
+	// filters the data when clicked the All Genders button
+    document.getElementById("AllGenders").addEventListener("click", function(){    
+    // creates and formats prizeByYear table   
+    var prizeByYear = "<table border = 1 >";
+	prizeByYear += "<tr><th>Year</th><th>Category</th><th>First Name</th><th>Surname</th><th>Motivation</th><th>Gender</th><th>Additional Info</th></tr>"; 
+    for (var i=0; i <WinnersByYearArray.length; i++) {  
+            var ID = WinnersByYearArray[i][0];
+			var cat = WinnersByYearArray[i][2];
+            var test = WinnersByYearArray[i][1];
+		    var startyearrange = parseInt(document.getElementById("Years").value);
+    		var endyearrange = parseInt(document.getElementById("Years1").value);
+    		var catselected = document.getElementById("category").value;  
+			// if criteria for year range and category range
+			if (test >= startyearrange && test	<=endyearrange && (cat == catselected || catselected == "All")){
+			var year = WinnersByYearArray[i][1];  
+			var category = WinnersByYearArray[i][2];  	
+            var firstname = WinnersByYearArray[i][3];
+            var surname = WinnersByYearArray[i][4];
+            var motivation = WinnersByYearArray[i][5];
+            for (var x=0; x <WinnersByIDArray.length; x += 19) { 
+                if (ID ==WinnersByIDArray[x]){
+					var gender = WinnersByIDArray[x+3];
+                 }
+			}	
+			prizeByYear += "<tr><td>" + year + "</td><td>" + category + "</td><td>" + firstname + "</td><td>" + surname + "</td><td>" + motivation + "</td><td>" + gender + "</td><td><button onclick="+"reply_click(this.id)"+" class="+"button"+" id="+ID +">" + "More Info" + "</button></td></tr>"; 	
+			}
+	}
+            prizeByYear += "</table>";     
+            document.getElementById("prizesByYear").innerHTML = prizeByYear;
+                    
+	});
+                	
+	});
+				
+}
+// got help with stack overflow with this https://stackoverflow.com/questions/4825295/javascript-onclick-to-get-the-id-of-the-clicked-button
+// This function is called when the more info button is clicked and used to formualte the additional info table
+function reply_click(clicked_id)
+  		{		
+      	var clickedID = (clicked_id);
+		 
+		for (var x=0; x <WinnersByIDArray.length; x += 19) { 
+        	if (clickedID ==WinnersByIDArray[x]){
+				var firstname = WinnersByIDArray[x+1];
+				var surname = WinnersByIDArray[x+2];
+				var gender = WinnersByIDArray[x+3];
+				var DOB = WinnersByIDArray[x+4]; 
+				var DOD = WinnersByIDArray[x+5]; 
+				var city = WinnersByIDArray[x+6];  
+				var year = WinnersByIDArray[x+7];  
+				var category = WinnersByIDArray[x+8];  
+				var motivation = WinnersByIDArray[x+9];  
+				var name = WinnersByIDArray[x+10]; 
+				var affCity = WinnersByIDArray[x+11]; 
+				var country = WinnersByIDArray[x+12]; 
+				var category1 = WinnersByIDArray[x+13]; 
+                var year1 = WinnersByIDArray[x+14]; 
+                var motivation1 = WinnersByIDArray[x+15]; 
+				var name1 = WinnersByIDArray[x+16]; 
+                var affCity1 = WinnersByIDArray[x+17];  
+                var country1 = WinnersByIDArray[x+18]; 
+								
+				var winnersByID = "<table border = 1 >";
+				if(DOD =="0000-00-00"){
+					var DOD = "unknown";
+				}
+				if(DOB =="0000-00-00"){
+					var DOB = "unknown";
+				}	
+				winnersByID += "<tr><th>Firstname</th><td>" + firstname +"</td></tr><tr><th>Surname</th><td>" + surname +"</td></tr><tr><th>Gender</th><td>" + gender +"</td></tr><tr><th>DOB</th><td>" + DOB +"</td></tr><tr><th>Date of death</th><td>" + DOD +"</td></tr><tr><th>Born City</th><td>" + city +"</td></tr><tr><th>Year</th><td>" + year +"</td></tr></tr><tr><th>Category</th><td>" + category +"</td></tr></tr><tr><th>Motivation</th><td>" + motivation +"</td></tr><tr><th>Affiliation Name</th><td>" + name +"</td></tr><tr><th>Affiliation City</th><td>" + affCity +"</td></tr><tr><th>Affiliation Country</th><td>" + country +"</td></tr>"
+				if (category1 !=0){
+					winnersByID += "<tr><th colspan=2>Prize Two</th></tr><tr><th>Year</th><td>" + year1 +"</td></tr><tr><th>Category</th><td>" + category1 +"</td></tr><tr><th>Motivation</th><td>" + motivation1 +"</td></tr>"	
+				}
+				if (name1 != 0){
+					winnersByID += "<tr><th colspan=2>Affiliate Two</th></tr><tr><th>Affiliation Name</th><td>" + name1 +"</td></tr><tr><th>Affiliation City</th><td>" + affCity1 +"</td></tr><tr><th>Affiliation Country</th><td>" + country1 +"</td></tr>"	
+				}							
+            }
+		}	
+		winnersByID += "</table>";     	
+		document.getElementById("winnersByID").innerHTML = winnersByID;
+			
+ }
+	
+</script>
+
+</body>
+</html>

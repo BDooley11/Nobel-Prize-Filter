@@ -1,0 +1,46 @@
+/* myStyle.css */    
+
+/* set website width to 1366 pixels as most popular screen size */
+body {
+    width: 1366px;
+    padding: 0;
+    margin: auto;
+    font-family: cursive;
+}
+
+#prizesByYear {
+    width:1000px;
+    float: left; 
+    margin-right:25px;
+}
+
+#WinnersByID {
+    width:266px;
+    float: left; 
+}
+h1 , p {
+    text-align: center;
+}
+a:link{
+	text-decoration: none;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td,th   {
+    padding:5px;
+    border: 1px solid black;
+    font-size: 14px;  
+}
+
+th{
+    color:white;
+    background-color:green;  
+}
+
+tr:nth-child(even) {
+	background-color: #f2f2f2;
+}
+	
